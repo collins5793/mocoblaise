@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\HomeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,5 +21,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/auth/redirect/google', [GoogleController::class, 'redirect'])->name('google.redirect');
 Route::get('/auth/callback/google', [GoogleController::class, 'callback'])->name('google.callback');
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 require __DIR__.'/auth.php';

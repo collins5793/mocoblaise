@@ -16,6 +16,18 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('image')->nullable();
+            $table->enum('category', [
+                'Informatique',
+                'Langues et communication',
+                'Gestion et affaires',
+                'Professionnaliser',
+                'Art et design',
+                'Éducation de base',
+                'Musique',
+                'Esthétique',
+                'Santé',
+                'Autres'
+            ])->default('Autres');
             $table->foreignId('admin_id')->constrained('users');
             $table->timestamps();
         });
