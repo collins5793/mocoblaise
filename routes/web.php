@@ -25,3 +25,10 @@ Route::get('/auth/callback/google', [GoogleController::class, 'callback'])->name
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 require __DIR__.'/auth.php';
+
+
+use App\Http\Controllers\CourseController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('courses', CourseController::class);
+});

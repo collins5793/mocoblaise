@@ -14,38 +14,38 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        
-nav a {
-    position: relative;
-    font-size: 1.1em;
-    color: #333;
-    text-decoration: none;
-    padding: 6px 20px;
-    transition: .5s;
-}
 
-nav a:hover {
-    color: #0ef;
-}
+        nav a {
+            position: relative;
+            font-size: 1.1em;
+            color: #333;
+            text-decoration: none;
+            padding: 6px 20px;
+            transition: .5s;
+        }
 
-nav a span {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    border-bottom: 2px solid #0ef;
-    border-radius: 15px;
-    transform: scale(0) translateY(50px);
-    opacity: 0;
-    transition: .5s;
-}
+        nav a:hover {
+            color: #0ef;
+        }
 
-nav a:hover span {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-}
+        nav a span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            border-bottom: 2px solid #0ef;
+            border-radius: 15px;
+            transform: scale(0) translateY(50px);
+            opacity: 0;
+            transition: .5s;
+        }
+
+        nav a:hover span {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
 
         /* Custom scrollbar for modern feel */
         ::-webkit-scrollbar {
@@ -53,7 +53,8 @@ nav a:hover span {
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: #4f46e5; /* Indigo 600 */
+            background-color: #4f46e5;
+            /* Indigo 600 */
             border-radius: 10px;
         }
 
@@ -62,7 +63,6 @@ nav a:hover span {
         button {
             transition: all 0.3s ease;
         }
-        
     </style>
 </head>
 
@@ -110,7 +110,8 @@ nav a:hover span {
                     <p class="mb-10 text-lg md:text-xl font-medium drop-shadow">
                         Une plateforme QCM complète, interactive et moderne
                     </p>
-                    <a href="#" class="inline-block bg-white text-indigo-700 font-bold px-10 py-4 rounded-full shadow-lg hover:bg-gray-200 hover:text-indigo-800 transition">
+                    <a href="#"
+                        class="inline-block bg-white text-indigo-700 font-bold px-10 py-4 rounded-full shadow-lg hover:bg-gray-200 hover:text-indigo-800 transition">
                         Explorer les cours
                     </a>
                 </div>
@@ -128,20 +129,21 @@ nav a:hover span {
         <div class="container mx-auto px-6 max-w-6xl">
             <h2 class="text-4xl font-extrabold text-center mb-16 text-indigo-700">Nos domaines de formation</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                @if(!empty($categories))
-                @foreach ($categories as $category)
-                @if ($category !== null)
-                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h3 class="text-xl font-semibold">{{ $category['emoji'] }} {{ $category['name'] }}</h3>
-                                <p class="text-gray-600">{{ $category['count'] }} cours</p>
+                @if (!empty($categories))
+                    @foreach ($categories as $category)
+                        @if ($category !== null)
+                            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-semibold">{{ $category['emoji'] }}
+                                            {{ $category['name'] }}</h3>
+                                        <p class="text-gray-600">{{ $category['count'] }} cours</p>
+                                    </div>
+                                    <a href="" class="text-blue-600 font-medium hover:underline">Apprendre</a>
+                                </div>
                             </div>
-                            <a href="" class="text-blue-600 font-medium hover:underline">Apprendre</a>
-                        </div>
-                    </div>
-                @endif
-                @endforeach
+                        @endif
+                    @endforeach
                 @endif
             </div>
         </div>
@@ -160,7 +162,8 @@ nav a:hover span {
                 <div class="p-8 border border-indigo-100 rounded-xl shadow-md hover:shadow-xl transition duration-300">
                     <div class="text-7xl mb-6">📝</div>
                     <h3 class="font-bold text-2xl mb-4">QCM avec correction</h3>
-                    <p class="text-gray-600 text-lg">Chaque QCM propose des corrections détaillées et des justifications.</p>
+                    <p class="text-gray-600 text-lg">Chaque QCM propose des corrections détaillées et des
+                        justifications.</p>
                 </div>
                 <div class="p-8 border border-indigo-100 rounded-xl shadow-md hover:shadow-xl transition duration-300">
                     <div class="text-7xl mb-6">📜</div>
@@ -177,11 +180,13 @@ nav a:hover span {
             <h2 class="text-4xl font-extrabold mb-16 text-indigo-700">Ils nous ont fait confiance</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                 <div class="bg-white p-8 rounded-xl shadow-md">
-                    <p class="text-gray-700 italic text-lg">“Grâce à cette plateforme, j’ai enfin réussi mon concours !”</p>
+                    <p class="text-gray-700 italic text-lg">“Grâce à cette plateforme, j’ai enfin réussi mon concours !”
+                    </p>
                     <div class="mt-6 font-semibold text-indigo-700 text-xl">Fatima, Étudiante</div>
                 </div>
                 <div class="bg-white p-8 rounded-xl shadow-md">
-                    <p class="text-gray-700 italic text-lg">“Simple, rapide et très complet. Je recommande fortement.”</p>
+                    <p class="text-gray-700 italic text-lg">“Simple, rapide et très complet. Je recommande fortement.”
+                    </p>
                     <div class="mt-6 font-semibold text-indigo-700 text-xl">Jean, Candidat libre</div>
                 </div>
                 <div class="bg-white p-8 rounded-xl shadow-md">
@@ -218,32 +223,33 @@ nav a:hover span {
         });
     </script>
     <script>
-    const isLoggedIn = @json(Auth::check());
+        const isLoggedIn = @json(Auth::check());
 
-    if (!isLoggedIn) {
-        document.addEventListener('DOMContentLoaded', () => {
-            // Sélectionne tous les liens <a> et boutons <button>
-            document.querySelectorAll('a, button').forEach(el => {
-                el.addEventListener('click', e => {
-                    // Si le lien a une href et ce n'est pas la page de connexion ou d'inscription,
-                    // alors redirige vers login
-                    if(el.tagName === 'A') {
-                        const href = el.getAttribute('href');
-                        if (href && href !== '#' && !href.includes('/login') && !href.includes('/register')) {
+        if (!isLoggedIn) {
+            document.addEventListener('DOMContentLoaded', () => {
+                // Sélectionne tous les liens <a> et boutons <button>
+                document.querySelectorAll('a, button').forEach(el => {
+                    el.addEventListener('click', e => {
+                        // Si le lien a une href et ce n'est pas la page de connexion ou d'inscription,
+                        // alors redirige vers login
+                        if (el.tagName === 'A') {
+                            const href = el.getAttribute('href');
+                            if (href && href !== '#' && !href.includes('/login') && !href.includes(
+                                    '/register')) {
+                                e.preventDefault();
+                                window.location.href = "{{ route('login') }}";
+                            }
+                        }
+                        // Pour les boutons, on peut aussi rediriger
+                        else if (el.tagName === 'BUTTON') {
                             e.preventDefault();
                             window.location.href = "{{ route('login') }}";
                         }
-                    }
-                    // Pour les boutons, on peut aussi rediriger
-                    else if(el.tagName === 'BUTTON') {
-                        e.preventDefault();
-                        window.location.href = "{{ route('login') }}";
-                    }
+                    });
                 });
             });
-        });
-    }
-</script>
+        }
+    </script>
 
 </body>
 
