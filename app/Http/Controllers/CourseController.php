@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
     public function index()
     {
-        $courses = Course::where('admin_id', auth()->id())->get();
+        $courses = Course::where('admin_id', Auth::id())->get();
         return view('courses.index', compact('courses'));
     }
 
@@ -32,19 +33,19 @@ class CourseController extends Controller
             $imagePath = $request->file('image')->store('courses', 'public');
         }
 
-        Course::create([
+        $course = Course::create([
             'title'       => $request->title,
             'description' => $request->description,
             'image'       => $imagePath,
-            'admin_id'    => auth()->id(),
+            'admin_id'    => Auth::id(),
         ]);
 
-        return redirect()->route('courses.index')->with('success', 'Cours créé avec succès');
+        return redirect()->route('lessons.create', ['course' => $course->id])
+        ->with('success', 'Cours créé avec succès. Ajoutez maintenant les leçons.');
     }
 
     public function edit(Course $course)
     {
-        $this->authorize('update', $course); // optionnel
         return view('courses.edit', compact('course'));
     }
 
@@ -74,7 +75,6 @@ class CourseController extends Controller
 
     public function destroy(Course $course)
     {
-        $this->authorize('delete', $course); // optionnel
         if ($course->image) {
             Storage::disk('public')->delete($course->image);
         }

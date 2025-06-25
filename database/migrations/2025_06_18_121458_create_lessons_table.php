@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('course_id')->constrained();
+            $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
             $table->string('title');
             $table->enum('content_type', ['texte', 'pdf', 'document']);
             $table->text('content_url');
