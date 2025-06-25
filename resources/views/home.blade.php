@@ -14,6 +14,10 @@
             font-family: 'Poppins', sans-serif;
         }
 
+        nav {
+            display: flex
+        }
+
 
         nav a {
             position: relative;
@@ -85,15 +89,18 @@
                 @auth
                     <!-- L'utilisateur est connecté -->
                     <a href="{{ route('dashboard') }}" class="">Tableau de bord</a>
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                    <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="">Déconnexion</button>
+                        <a href="#" onclick="event.preventDefault(); this.closest('form').submit();" class="text-red-500 hover:underline">
+                            Se déconnecter
+                        </a>
                     </form>
+
                 @endauth
-                <span class="ml-4 cursor-pointer select-none">
+                {{-- <span class="ml-4 cursor-pointer select-none">
                     <button id="langFr" class=" font-bold">FR</button> |
                     <button id="langEn" class=" font-bold">EN</button>
-                </span>
+                </span> --}}
             </nav>
         </div>
     </header>
