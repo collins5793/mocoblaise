@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ajouter des Leçons</title>
+
+  <!-- Trix Editor CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/2.0.0/trix.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/trix/2.0.0/trix.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
+<script src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
+
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -90,76 +97,137 @@
     .btn-submit:hover {
       background-color: #1d4ed8;
     }
+
+    trix-editor {
+      background-color: white;
+      min-height: 150px;
+      margin-bottom: 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 10px;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Ajouter des Leçons</h1>
+<div class="container">
+  <h1>Ajouter des Leçons</h1>
 
-    <form method="POST" action="{{ route('lessons.store') }}">
-      @csrf
-      <input type="hidden" name="course_id" value="{{ $courseId }}">
+  <form method="POST" action="{{ route('lessons.store') }}">
+    @csrf
 
-      <div id="lesson-fields">
-        <div class="lesson-group">
-          <h2>Leçon 1</h2>
+    @if ($errors->any())
+      <div style="color: red; margin-bottom: 10px;">
+        <ul>
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
 
-          <label for="title0">Titre</label>
-          <input type="text" id="title0" name="lessons[0][title]" required>
+    <input type="hidden" name="course_id" value="{{ $courseId }}">
 
-          <label for="type0">Type de contenu</label>
-          <select name="lessons[0][content_type]" id="type0">
-            <option value="texte">Texte</option>
-            <option value="pdf">PDF</option>
-            <option value="document">Document</option>
-          </select>
+    <div id="lesson-fields">
+      <div class="lesson-group" data-index="0">
+        <h2>Leçon 1</h2>
 
-          <label for="url0">URL du contenu</label>
-          <input type="text" id="url0" name="lessons[0][content_url]" required>
+        <label>Titre</label>
+        <input type="text" name="lessons[0][title]" required>
 
-          <label for="order0">Ordre (facultatif)</label>
-          <input type="number" id="order0" name="lessons[0][order]">
+        <label>Type de contenu</label>
+        <select name="lessons[0][content_type]" class="content-type" onchange="handleTypeChange(this)">
+          <option value="texte">Texte</option>
+          <option value="pdf">PDF</option>
+          <option value="document">Document</option>
+        </select>
+
+        <div class="content-texte">
+          <input type="hidden" name="lessons[0][content_url]" id="content0">
+          <trix-editor input="content0"></trix-editor>
         </div>
+
+        <div class="content-url" style="display: none;">
+          <label>URL du contenu</label>
+          <input type="text" name="lessons[0][content_url_alt]">
+        </div>
+
+        <label>Ordre (facultatif)</label>
+        <input type="number" name="lessons[0][order]">
+      </div>
+    </div>
+
+    <button type="button" class="btn-add" onclick="addLesson()">Ajouter une autre leçon</button>
+    <button type="submit" class="btn-submit">Valider les leçons</button>
+  </form>
+</div>
+
+<script>
+  let lessonCount = 1;
+
+  function addLesson() {
+    const container = document.getElementById('lesson-fields');
+
+    const newIndex = lessonCount;
+
+    const group = document.createElement('div');
+    group.classList.add('lesson-group');
+    group.dataset.index = newIndex;
+
+    group.innerHTML = `
+      <h2>Leçon ${newIndex + 1}</h2>
+
+      <label>Titre</label>
+      <input type="text" name="lessons[${newIndex}][title]" required>
+
+      <label>Type de contenu</label>
+      <select name="lessons[${newIndex}][content_type]" class="content-type" onchange="handleTypeChange(this)">
+        <option value="texte">Texte</option>
+        <option value="pdf">PDF</option>
+        <option value="document">Document</option>
+      </select>
+
+      <div class="content-texte">
+        <input type="hidden" name="lessons[${newIndex}][content_url]" id="content${newIndex}">
+        <trix-editor input="content${newIndex}"></trix-editor>
       </div>
 
-      <button type="button" class="btn-add" onclick="addLesson()">Ajouter une autre leçon</button>
-      <button type="submit" class="btn-submit">Valider les leçons</button>
-    </form>
-  </div>
+      <div class="content-url" style="display: none;">
+        <label>URL du contenu</label>
+        <input type="text" name="lessons[${newIndex}][content_url_alt]">
+      </div>
 
-  <script>
-    let lessonCount = 1;
+      <label>Ordre (facultatif)</label>
+      <input type="number" name="lessons[${newIndex}][order]">
+    `;
 
-    function addLesson() {
-      const container = document.getElementById('lesson-fields');
+    container.appendChild(group);
+    lessonCount++;
+  }
 
-      const html = `
-        <div class="lesson-group">
-          <h2>Leçon ${lessonCount + 1}</h2>
+  function handleTypeChange(select) {
+    const group = select.closest('.lesson-group');
+    const texteDiv = group.querySelector('.content-texte');
+    const urlDiv = group.querySelector('.content-url');
 
-          <label for="title${lessonCount}">Titre</label>
-          <input type="text" id="title${lessonCount}" name="lessons[${lessonCount}][title]" required>
+    const hiddenInput = texteDiv.querySelector('input[type="hidden"]');
+    const urlInput = urlDiv.querySelector('input[type="text"]');
 
-          <label for="type${lessonCount}">Type de contenu</label>
-          <select name="lessons[${lessonCount}][content_type]" id="type${lessonCount}">
-            <option value="texte">Texte</option>
-            <option value="pdf">PDF</option>
-            <option value="document">Document</option>
-          </select>
+    if (select.value === 'texte') {
+      texteDiv.style.display = 'block';
+      urlDiv.style.display = 'none';
 
-          <label for="url${lessonCount}">URL du contenu</label>
-          <input type="text" id="url${lessonCount}" name="lessons[${lessonCount}][content_url]" required>
+      hiddenInput.disabled = false;
+      urlInput.disabled = true;
+    } else {
+      texteDiv.style.display = 'none';
+      urlDiv.style.display = 'block';
 
-          <label for="order${lessonCount}">Ordre (facultatif)</label>
-          <input type="number" id="order${lessonCount}" name="lessons[${lessonCount}][order]">
-        </div>
-      `;
-
-      container.insertAdjacentHTML('beforeend', html);
-      lessonCount++;
+      hiddenInput.disabled = true;
+      urlInput.disabled = false;
     }
-  </script>
+  }
+</script>
 
 </body>
 </html>

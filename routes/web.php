@@ -8,6 +8,9 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\CourseController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,19 +20,31 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/admin/register', [AdminAuthController::class, 'showRegistrationForm'])->name('admin.register');
+Route::post('/admin/register', [AdminAuthController::class, 'register'])->name('admin.register.submit');
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::resource('courses', CourseController::class);
+});
+
+
 Route::get('/auth/redirect/google', [GoogleController::class, 'redirect'])->name('google.redirect');
 Route::get('/auth/callback/google', [GoogleController::class, 'callback'])->name('google.callback');
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+Route::get('/cours/categorie/{category}', [CourseController::class, 'byCategory'])->name('courses.byCategory');
+Route::get('/cours', [CourseController::class, 'all'])->name('courses.all');
+Route::get('/courses/{id}', [CourseController::class, 'show'])->name('courses.show');
+
 // Routes Quiz
-Route::resource('quizzes', QuizController::class);
 
 // Routes Question (relation avec quiz)
 Route::prefix('quizzes/{quiz}')->group(function () {
@@ -47,13 +62,19 @@ Route::get('/answers/create/{quiz}', [AnswerController::class, 'create'])->name(
 Route::post('/answers/store', [AnswerController::class, 'store'])->name('answers.store');
 Route::get('/lessons/create', [LessonController::class, 'create'])->name('lessons.create');
 Route::post('/lessons/store', [LessonController::class, 'store'])->name('lessons.store');
+// web.php
+Route::get('/courses/{course}/start', [LessonController::class, 'start'])->name('courses.start');
+Route::get('/courses/{course}/lesson/{lesson}', [LessonController::class, 'show'])->name('lessons.show');
 Route::get('/quizzes/{quiz}/questions', [App\Http\Controllers\QuestionController::class, 'showByQuiz'])->name('quizzes.questions');
+Route::get('/quizzes/start/{lesson}', [QuizController::class, 'start'])->name('quizzes.start');
+// Route::post('/quizzes/{lesson}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
+Route::get('/lessons/{lesson}/quiz', [QuizController::class, 'start'])->name('quizzes.start');
+Route::get('/lessons/{lesson}/quiz', [QuizController::class, 'start'])->name('quizzes.start');
+Route::post('/quizzes/{quiz}/submit', [QuizController::class, 'submit'])->name('quizzes.submit');
+
+
+Route::resource('quizzes', QuizController::class);
 
 require __DIR__.'/auth.php';
 
 
-use App\Http\Controllers\CourseController;
-
-Route::middleware(['auth'])->group(function () {
-    Route::resource('courses', CourseController::class);
-});

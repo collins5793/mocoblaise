@@ -18,6 +18,7 @@ return new class extends Migration
             $table->float('score');
             $table->boolean('passed')->default(false);
             $table->timestamp('attempted_at');
+            $table->timestamps();
         });
     }
 

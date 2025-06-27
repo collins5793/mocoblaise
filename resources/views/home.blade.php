@@ -79,7 +79,7 @@
 
             <nav class="space-x-6 text-gray-700 font-semibold">
                 <a href="#" class="">Accueil</a>
-                <a href="#" class="">Cours</a>
+                <a href="{{ route('courses.all') }}">Cours</a>
                 @guest
                     <!-- L'utilisateur n'est PAS connecté -->
                     <a href="{{ route('login') }}" class="">Connexion</a>
@@ -146,7 +146,10 @@
                                             {{ $category['name'] }}</h3>
                                         <p class="text-gray-600">{{ $category['count'] }} cours</p>
                                     </div>
-                                    <a href="" class="text-blue-600 font-medium hover:underline">Apprendre</a>
+                                    <a href="{{ route('courses.byCategory', ['category' => $category['name']]) }}"
+                                    class="text-blue-600 font-medium hover:underline">
+                                    Apprendre
+                                    </a>
                                 </div>
                             </div>
                         @endif

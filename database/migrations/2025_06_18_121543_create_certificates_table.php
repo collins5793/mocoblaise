@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained('courses');
             $table->string('pdf_url');
             $table->timestamp('generated_at');
+            $table->timestamps();
         });
     }
 
