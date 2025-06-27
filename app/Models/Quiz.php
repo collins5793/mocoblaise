@@ -25,4 +25,19 @@ class Quiz extends Model
     {
         return $this->hasMany(Question::class);
     }
+    public function getOptionsAttribute($value)
+{
+    return json_decode($value, true);
+}
+
+public function sessions()
+{
+    return $this->hasMany(QuizSession::class);
+}
+
+public function attempts()
+{
+    return $this->hasMany(UserQuizAttempt::class);
+}
+
 }

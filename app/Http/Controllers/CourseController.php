@@ -81,4 +81,32 @@ class CourseController extends Controller
         $course->delete();
         return redirect()->route('courses.index')->with('success', 'Cours supprimé');
     }
+
+    public function show($id)
+    {
+        $course = Course::with(['lessons.quizzes'])->findOrFail($id);
+        return view('courses.show', compact('course'));
+    }
+
+    public function byCategory($category)
+    {
+        $courses = Course::where('category', $category)->get();
+        return view('courses.by-category', compact('courses', 'category'));
+    }
+
+    public function all(Request $request)
+    {
+        $search = $request->input('search');
+        $courses = Course::query();
+
+        if ($search) {
+            $courses->where('title', 'like', "%$search%");
+        }
+
+        return view('courses.all', [
+            'courses' => $courses->paginate(9),
+            'search' => $search
+        ]);
+    }
+
 }

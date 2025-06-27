@@ -22,4 +22,15 @@ class Course extends Model
     {
         return $this->belongsTo(User::class, 'admin_id');
     }
+
+    public function lessons() {
+        return $this->hasMany(Lesson::class);
+    }
+
+    public function users()
+{
+    return $this->belongsToMany(User::class, 'user_courses')->withPivot('started_at', 'completed_at', 'progress', 'status')->withTimestamps();
+}
+
+
 }

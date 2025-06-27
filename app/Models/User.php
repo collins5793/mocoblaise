@@ -45,4 +45,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function courses()
+{
+    return $this->belongsToMany(Course::class, 'user_courses')->withPivot('started_at', 'completed_at', 'progress', 'status')->withTimestamps();
+}
+
+public function quizSessions()
+{
+    return $this->hasMany(QuizSession::class);
+}
+
+public function quizAttempts()
+{
+    return $this->hasMany(UserQuizAttempt::class);
+}
+
+
 }
