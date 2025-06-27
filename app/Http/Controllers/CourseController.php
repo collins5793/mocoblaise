@@ -44,7 +44,6 @@ class CourseController extends Controller
 
     public function edit(Course $course)
     {
-        $this->authorize('update', $course); // optionnel
         return view('courses.edit', compact('course'));
     }
 
@@ -74,7 +73,6 @@ class CourseController extends Controller
 
     public function destroy(Course $course)
     {
-        $this->authorize('delete', $course); // optionnel
         if ($course->image) {
             Storage::disk('public')->delete($course->image);
         }
