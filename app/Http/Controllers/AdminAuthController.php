@@ -31,6 +31,6 @@ class AdminAuthController extends Controller
 
         Auth::login($admin);
 
-        return redirect()->route('dashboard')->with('success', 'Inscription admin réussie');
+        return redirect()->route('admin.dashboard')->with('success', 'Inscription admin réussie');
     }
 }

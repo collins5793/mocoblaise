@@ -107,6 +107,75 @@
             margin-top: 5px;
         }
 
+        #comment-section {
+  margin-top: 50px;
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+#commentToggleBtn {
+  background-color: #334155;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#commentToggleBtn:hover {
+  background-color: #1e293b;
+}
+
+#commentForm textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+#commentForm button {
+  background-color: #2563eb;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+#commentForm button:hover {
+  background-color: #1d4ed8;
+}
+
+#comment-section h4 {
+  margin-top: 20px;
+  font-size: 20px;
+  color: #1e293b;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+#comment-section .comment {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+#comment-section .comment strong {
+  color: #1e40af;
+}
+
+#comment-section .comment small {
+  color: #64748b;
+}
+
     </style>
 </head>
 <body>
@@ -142,6 +211,53 @@
         @empty
             <p style="color: red; margin-top: 10px;">Ce cours ne contient aucune leçon.</p>
         @endforelse
+        <hr style="margin-top: 40px;">
+
+<div id="comment-section">
+  <button class="btn btn-secondary mb-3" onclick="toggleCommentForm()" id="commentToggleBtn">
+    💬 Laisser un commentaire ▼
+  </button>
+
+  <div id="commentForm" style="display: none;">
+    @if(session('success'))
+      <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <form method="POST" action="{{ route('courses.comment.store', $course->id) }}">
+      @csrf
+      <textarea name="comment_text" class="form-control" rows="4" placeholder="Votre commentaire..." required></textarea>
+      <button type="submit" class="btn btn-primary mt-2">Envoyer</button>
+    </form>
+  </div>
+
+  <h4 style="margin-top: 30px;">🗨️ Commentaires</h4>
+  @forelse ($course->comments as $comment)
+    <div style="background: #f8fafc; padding: 10px 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0;">
+      <strong>{{ $comment->user->name }}</strong>
+      <small style="color: gray;"> — {{ $comment->created_at->diffForHumans() }}</small>
+      <p style="margin-top: 5px;">{{ $comment->comment_text }}</p>
     </div>
+  @empty
+    <p>Aucun commentaire pour ce cours.</p>
+  @endforelse
+</div>
+
+
+
+    </div>
+    <script>
+  function toggleCommentForm() {
+    const form = document.getElementById('commentForm');
+    const btn = document.getElementById('commentToggleBtn');
+
+    if (form.style.display === 'none') {
+      form.style.display = 'block';
+      btn.innerHTML = '💬 Laisser un commentaire ▲';
+    } else {
+      form.style.display = 'none';
+      btn.innerHTML = '💬 Laisser un commentaire ▼';
+    }
+  }
+</script>
 </body>
 </html>

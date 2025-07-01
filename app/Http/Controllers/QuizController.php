@@ -14,22 +14,34 @@ use App\Models\UserQuizAttempt;
 
 class QuizController extends Controller
 {
-    public function index()
-    {
-        $quizzes = Quiz::all();
-        return view('quizzes.index', compact('quizzes'));
-        $quizzes = Quiz::with('lesson')->get();
-        return view('quizzes.index', compact('quizzes'));
+    public function index(Request $request)
+{
+    $query = Quiz::with('lesson');
+
+    if ($search = $request->input('search')) {
+        $query->where('title', 'like', "%{$search}%");
     }
+
+    $quizzes = $query->paginate(10);
+
+    return view('quizzes.index', compact('quizzes'));
+}
+
 
     public function create()
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Vous n\'êtes pas autorisé à accéder à cette page.');
+        }
         $lessons = \App\Models\Lesson::all();
         return view('quizzes.create', compact('lessons'));
     }
 
     public function store(Request $request)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Vous n\'êtes pas autorisé à accéder à cette page.');
+        }
         $request->validate([
             'lesson_id' => 'required|exists:lessons,id',
             'title' => 'required|string|max:191',
@@ -50,12 +62,18 @@ class QuizController extends Controller
 
     public function edit(Quiz $quiz)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Vous n\'êtes pas autorisé à accéder à cette page.');
+        }
         $lessons = \App\Models\Lesson::all();
         return view('quizzes.edit', compact('quiz', 'lessons'));
     }
 
     public function update(Request $request, Quiz $quiz)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Vous n\'êtes pas autorisé à accéder à cette page.');
+        }
         $request->validate([
             'title' => 'required|string|max:191',
             'duration_minutes' => 'required|integer',
@@ -69,6 +87,9 @@ class QuizController extends Controller
 
     public function destroy(Quiz $quiz)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Vous n\'êtes pas autorisé à accéder à cette page.');
+        }
         $quiz->delete();
         return redirect()->route('quizzes.index')->with('success', 'Quiz supprimé avec succès.');
     }
@@ -194,6 +215,38 @@ public function submit(Request $request, Quiz $quiz)
         'userAnswers' => $userAnswers,
     ]);
 }
+
+public function listByLesson($lessonId)
+{
+    $lesson = Lesson::with('quizzes')->findOrFail($lessonId);
+    return view('admin.quizzes.index', compact('lesson'));
+}
+
+
+public function createForLesson($lessonId)
+{
+    $lesson = Lesson::findOrFail($lessonId);
+    return view('admin.quizzes.create', compact('lesson'));
+}
+
+
+public function storeForLesson(Request $request, $lessonId)
+{
+    $request->validate([
+        'title' => 'required|string|max:191',
+        'duration_minutes' => 'required|integer',
+    ]);
+
+    Quiz::create([
+        'lesson_id' => $lessonId,
+        'title' => $request->title,
+        'duration_minutes' => $request->duration_minutes,
+        'is_active' => true,
+    ]);
+
+    return redirect()->route('quizzes.byLesson', $lessonId)->with('success', 'Quiz ajouté avec succès.');
+}
+
 
 
 

@@ -88,7 +88,16 @@
 
                 @auth
                     <!-- L'utilisateur est connecté -->
-                    <a href="{{ route('dashboard') }}" class="">Tableau de bord</a>
+@if (Auth::check())
+    @if (Auth::user()->role === 'admin')
+        <a href="{{ route('admin.dashboard') }}" class="">Tableau de bord Admin</a>
+    @elseif (Auth::user()->role === 'etudiant')
+        <a href="{{ route('dashboard.user') }}" class="">Tableau de bord Étudiant</a>
+    @else
+        <a href="{{ route('home') }}" class="">Accueil</a>
+    @endif
+@endif
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <a href="#" onclick="event.preventDefault(); this.closest('form').submit();" class="text-red-500 hover:underline">
