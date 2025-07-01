@@ -168,6 +168,7 @@
       </a>
     @else
       <button class="btn-next" disabled>Cours terminé</button>
+    <a href="{{ route('courses.show', $course->id) }}" class="course-card" style="text-decoration:none; color:inherit;">Laisser un commentaire</a>
     @endif
   </div>
 </body>

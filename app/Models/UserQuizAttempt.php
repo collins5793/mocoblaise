@@ -29,4 +29,9 @@ class UserQuizAttempt extends Model
     {
         return $this->belongsTo(Quiz::class);
     }
+    // App\Models\UserQuizAttempt.php
+protected $casts = [
+    'attempted_at' => 'datetime',
+];
+
 }

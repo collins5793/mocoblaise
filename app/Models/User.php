@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -59,6 +60,17 @@ public function quizAttempts()
 {
     return $this->hasMany(UserQuizAttempt::class);
 }
+
+public function viewedLessons()
+{
+    return $this->hasMany(UserProgress::class);
+}
+
+public function isAdmin()
+{
+    return $this->role === 'admin';
+}
+
 
 
 }
