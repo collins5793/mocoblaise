@@ -64,23 +64,47 @@
       </div>
 
       <div class="d-flex justify-content-end">
-        @if ($hasQuiz)
-        <a href="{{ route('quizzes.start', ['lesson' => $lesson->id]) }}" class="btn btn-success mt-4">
-            Passer le test de la leçon
-        </a>
-    @else
-        @php
-            $nextLesson = $course->lessons()->where('order', '>', $lesson->order)->orderBy('order')->first();
-        @endphp
+       <form method="POST" action="{{ route('lessons.complete', $lesson->id) }}">
+  @csrf
 
-        @if ($nextLesson)
-            <a href="{{ route('lessons.show', ['course' => $course->id, 'lesson' => $nextLesson->id]) }}" class="btn btn-primary mt-4">
-                Chapitre suivant
-            </a>
-        @else
-            <span class="text-muted mt-4 d-block">Dernier chapitre du cours.</span>
-        @endif
+  @if ($hasQuiz)
+    <input type="hidden" name="goto_quiz" value="1">
+    <button type="submit" class="btn btn-success mt-4">
+        ✅ Passer le test de la leçon
+    </button>
+  @else
+    @if ($nextLesson)
+      <input type="hidden" name="goto_next" value="1">
+      <button type="submit" class="btn btn-primary mt-4">
+          ⏭️ Chapitre suivant
+      </button>
+    @else
+   
+    <a href="{{ route('courses.show', $course->id) }}" class="btn btn-secondary mt-3">
+      ✍️ Laisser un commentaire
+    </a>
     @endif
+  @endif
+</form>
+<!-- Si le cours n’est pas encore terminé -->
+@if (!$courseCompleted && !$nextLesson && !$hasQuiz)
+  <form action="{{ route('courses.complete', ['course' => $course->id]) }}" method="POST" class="d-inline">
+    @csrf
+    <button type="submit" class="btn btn-warning mt-3">✅ Terminer ce cours</button>
+  </form>
+@endif
+
+<!-- Si le cours est terminé -->
+@if ($courseCompleted)
+  <a href="{{ route('certificates.generate', ['course' => $course->id]) }}" class="btn btn-success mt-3">
+    🎓 Obtenir mon certificat
+  </a>
+  <a href="{{ route('courses.show', $course->id) }}" class="btn btn-secondary mt-3">
+    ✍️ Laisser un commentaire
+  </a>
+@endif
+
+
   </div>
 </div>
 

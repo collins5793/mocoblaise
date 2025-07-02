@@ -1,166 +1,63 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Liste des Quiz</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f8fafc;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
+@extends('admin.layout')
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 2rem 1rem;
-        }
+@section('title', 'Gestion des Quiz')
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
+@section('content')
+<h2>Gestion des Quiz</h2>
 
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #1e293b;
-        }
+<form method="GET" action="{{ route('quizzes.index') }}" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+    <input type="text" name="search" placeholder="Rechercher un quiz" value="{{ request('search') }}" 
+        style="padding:0.5rem; width: 300px; border-radius:5px; border:1px solid #ccc;" />
+    <button type="submit" 
+            style="padding:0.5rem 1rem; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer;">
+        Rechercher
+    </button>
 
-        .add-btn {
-            background-color: #2563eb;
-            color: white;
-            padding: 0.6rem 1rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background 0.3s;
-        }
+    <a href="{{ route('quizzes.create') }}" 
+       style="margin-left:auto; background:#28a745; color:white; padding:0.5rem 1rem; border-radius:5px; text-decoration:none;">
+       ➕ Ajouter un quiz
+    </a>
+</form>
 
-        .add-btn:hover {
-            background-color: #1e40af;
-        }
+<table style="width:100%; border-collapse: collapse; background:#fff; box-shadow: 0 0 10px rgb(0 0 0 / 0.1); border-radius:10px; overflow:hidden;">
+    <thead>
+        <tr style="background:#007bff; color:#fff;">
+            <th style="padding:1rem;">Titre</th>
+            <th>Leçon associée</th>
+            <th>Durée (minutes)</th>
+            <th style="width:220px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse ($quizzes as $quiz)
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding:0.75rem;">{{ $quiz->title }}</td>
+                <td>{{ $quiz->lesson?->title ?? '—' }}</td>
+                <td>{{ $quiz->duration_minutes }}</td>
+                <td>
+                    <a href="{{ route('quizzes.edit', $quiz->id) }}" 
+                       style="background:#007bff; color:white; padding:0.3rem 0.6rem; border-radius:5px; text-decoration:none; margin-right:5px;">
+                       Modifier
+                    </a>
 
-        .alert {
-            background-color: #d1fae5;
-            color: #065f46;
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1.5rem;
-        }
+                    <form method="POST" action="{{ route('quizzes.destroy', $quiz->id) }}" style="display:inline;" 
+                          onsubmit="return confirm('Voulez-vous vraiment supprimer ce quiz ?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" 
+                                style="background:#dc3545; color:white; border:none; padding:0.3rem 0.6rem; border-radius:5px; cursor:pointer;">
+                            Supprimer
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        @empty
+            <tr><td colspan="5" style="padding:1rem; text-align:center;">Aucun quiz trouvé.</td></tr>
+        @endforelse
+    </tbody>
+</table>
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            border: 1px solid #e2e8f0;
-        }
-
-        th, td {
-            padding: 0.75rem 1rem;
-            border: 1px solid #e2e8f0;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f1f5f9;
-            font-weight: 600;
-            color: #334155;
-        }
-
-        tr:hover {
-            background-color: #f9fafb;
-        }
-
-        .action-links a {
-            margin-right: 0.75rem;
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .action-links a:hover {
-            text-decoration: underline;
-        }
-
-        .action-links form {
-            display: inline;
-        }
-
-        .action-links button {
-            background: none;
-            border: none;
-            color: #dc2626;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .action-links button:hover {
-            text-decoration: underline;
-        }
-
-        .text-center {
-            text-align: center;
-            color: #6b7280;
-            padding: 1rem;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="header">
-            <h1>Liste des Quiz</h1>
-            <a href="{{ route('quizzes.create') }}" class="add-btn">+ Ajouter un Quiz</a>
-        </div>
-
-        @if(session('success'))
-            <div class="alert">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Titre</th>
-                    <th>Leçon</th>
-                    <th>Durée</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($quizzes as $quiz)
-                    <tr>
-                        <td>{{ $quiz->title }}</td>
-                        <td>{{ $quiz->lesson ? $quiz->lesson->title : 'Non défini' }}</td>
-                        <td>{{ $quiz->duration_minutes }} min</td>
-                        <td class="action-links text-center">
-                            <a href="{{ route('quizzes.edit', $quiz->id) }}">Modifier</a>
-
-                            <form action="{{ route('quizzes.destroy', $quiz->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer ce quiz ?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit">Supprimer</button>
-                            </form>
-
-                            <a href="{{ route('quizzes.questions', $quiz->id) }}" class="text-green-600">Voir les questions</a>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="text-center">Aucun quiz enregistré pour le moment.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-</body>
-</html>
+<div style="margin-top: 1rem;">
+    {{ $quizzes->withQueryString()->links() }}
+</div>
+@endsection

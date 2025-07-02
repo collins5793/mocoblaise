@@ -1,122 +1,113 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Liste des cours</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8fafc;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .course-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .course-card:hover {
-            transform: scale(1.02);
-        }
-        .course-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .badge {
-            display: inline-block;
-            background-color: #4f46e5;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 999px;
-            font-size: 12px;
-        }
+@extends('layouts.app')
 
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            width: 90%;
-            max-width: 800px;
-            padding: 20px;
-            border-radius: 8px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 22px;
-            cursor: pointer;
-            color: #333;
-        }
-        .lesson {
-            margin-top: 15px;
-            padding: 10px;
-            border-left: 4px solid #4f46e5;
-            background: #f1f5f9;
-            border-radius: 4px;
-        }
-        .quiz {
-            margin-left: 15px;
-            font-size: 15px;
-            color: #1e3a8a;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h2 class="text-3xl font-bold mb-6">Tous les cours</h2>
-    <div class="courses-grid">
-        @foreach ($courses as $course)
-            <a href="{{ route('courses.show', $course->id) }}" class="course-card" style="text-decoration:none; color:inherit;">
-                <div class="course-title">{{ $course->title }}</div>
-                <p>{{ \Illuminate\Support\Str::limit($course->description, 80) }}</p>
-                <span class="badge">{{ $course->category }}</span>
-            </a>
-        @endforeach
+@section('title', 'Tous les cours')
+
+@section('content')
+    <div class="relative container max-w-7xl mx-auto px-4 py-12">
+
+        <!-- Modal -->
+        <div id="courseModal"
+            class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 z-50">
+            <div
+                class="bg-white rounded-lg max-w-3xl w-full p-6 max-h-[80vh] overflow-y-auto relative shadow-xl transform scale-90 transition-transform duration-300">
+                <button onclick="closeModal()"
+                    class="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
+                    aria-label="Fermer la fenêtre">&times;</button>
+                <div id="modalContent" class="prose max-w-none">
+                    <!-- Contenu dynamique chargé via JS -->
+                    <p class="text-center text-gray-500">Chargement...</p>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-3xl font-extrabold mb-8 text-gray-900 select-none">Tous les cours</h2>
+
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher un cours..."
+            class="mb-8 w-full max-w-md p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" />
+
+        <div id="coursesGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            @foreach ($courses as $course)
+                <button type="button"
+                    class="course-card bg-white rounded-lg shadow-md hover:shadow-2xl p-6 text-left cursor-pointer transition transform hover:-translate-y-2 hover:scale-[1.03] focus:outline-none focus:ring-4 focus:ring-indigo-300"
+                    onclick="openModal({{ $course->id }})" data-title="{{ strtolower($course->title) }}">
+                    <h3 class="text-xl font-semibold mb-2 text-gray-800 truncate">{{ $course->title }}</h3>
+                    <p class="text-gray-600 mb-3 line-clamp-3">
+                        {{ \Illuminate\Support\Str::limit(strip_tags($course->description), 120) }}</p>
+                    <span
+                        class="inline-block bg-indigo-600 text-white text-xs font-semibold px-3 py-1 rounded-full select-none">
+                        {{ $course->category ?? 'Sans catégorie' }}
+                    </span>
+                </button>
+            @endforeach
+        </div>
     </div>
-</div>
 
-<!-- Modal -->
-<div class="modal" id="courseModal">
-    <div class="modal-content" id="modalContent">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-    </div>
-</div>
+    @push('scripts')
+        <script>
+            const courses = @json($courses->keyBy('id'));
 
-<script>
-    const courses = @json($courses->values());
+            function openModal(courseId) {
+                const modal = document.getElementById('courseModal');
+                const content = document.getElementById('modalContent');
 
-    function closeModal() {
-        document.getElementById('courseModal').style.display = 'none';
-    }
-</script>
-</body>
-</html>
+                const course = courses[courseId];
+                if (!course) {
+                    content.innerHTML = '<p class="text-red-500 font-semibold">Cours non trouvé.</p>';
+                } else {
+                    let imageHtml = '';
+                    if (course.image) {
+                        imageHtml =
+                            `<img src="/storage/${course.image}" alt="Image de ${course.title}" class="mb-4 rounded-lg shadow-md w-full object-cover max-h-60">`;
+                    }
+                    content.innerHTML = `
+                ${imageHtml}
+                <h2 class="text-3xl font-bold mb-4">${course.title}</h2>
+                <p class="mb-4">${course.description || 'Pas de description disponible.'}</p>
+                <p><strong>Catégorie :</strong> ${course.category || 'Non spécifiée'}</p>
+                ${course.lessons && course.lessons.length > 0 ? `
+                            <h3 class="mt-6 font-semibold text-indigo-700">Leçons</h3>
+                            <ul class="list-disc list-inside space-y-2">
+                                ${course.lessons.map(lesson => `
+                            <li>
+                                <strong>${lesson.title}</strong>
+                                ${lesson.quiz ? `<div class="ml-4 mt-1 inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold px-2 py-0.5 rounded-full select-none">📝 Quiz: ${lesson.quiz.title}</div>` : ''}
+                            </li>
+                        `).join('')}
+                            </ul>
+                        ` : '<p class="mt-4 text-gray-500 italic">Aucune leçon disponible.</p>'}
+            `;
+                }
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    modal.querySelector('div').classList.remove('scale-90');
+                }, 20);
+            }
+
+            function closeModal() {
+                const modal = document.getElementById('courseModal');
+                modal.querySelector('div').classList.add('scale-90');
+                setTimeout(() => {
+                    modal.classList.add('opacity-0', 'pointer-events-none');
+                }, 200);
+            }
+
+            // Fermer modal si clic hors contenu
+            document.getElementById('courseModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+
+            // Recherche côté client simple
+            document.getElementById('searchInput').addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                document.querySelectorAll('#coursesGrid button.course-card').forEach(card => {
+                    const title = card.getAttribute('data-title');
+                    if (title.includes(filter)) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+    @endpush
+@endsection

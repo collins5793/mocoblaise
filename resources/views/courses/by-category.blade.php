@@ -1,91 +1,41 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Cours - {{ $category }}</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f9fafb;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 40px 20px;
-        }
-        h1 {
-            color: #4338ca;
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 30px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-        }
-        .card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-            transition: 0.3s;
-        }
-        .card:hover {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-        .card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-        .card-body {
-            padding: 16px;
-        }
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        .card-category {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-bottom: 10px;
-        }
-        .card a {
-            color: #4f46e5;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .empty {
-            text-align: center;
-            color: #6b7280;
-            font-style: italic;
-        }
-    </style>
-</head>
-<body>
-<div class="container">
-    <h1>Cours dans la catégorie : {{ $category }}</h1>
+@extends('layouts.app')
 
-    @if($courses->isEmpty())
-        <p class="empty">Aucun cours trouvé pour cette catégorie.</p>
-    @else
-        <div class="grid">
-            @foreach ($courses as $course)
-                <div class="card">
-                    <img src="{{ asset('storage/' . $course->image) }}" alt="{{ $course->title }}">
-                    <div class="card-body">
-                        <div class="card-title">{{ $course->title }}</div>
-                        <div class="card-category">{{ $course->category }}</div>
-                        <a href="#">Voir le cours</a>
+@section('title', "Cours - $category")
+
+@section('content')
+    <div class="container mx-auto px-4 py-12 max-w-7xl">
+
+        <h1 class="text-3xl font-extrabold text-indigo-700 mb-8 select-none">
+            Cours dans la catégorie : <span class="capitalize">{{ $category }}</span>
+        </h1>
+
+        @if ($courses->isEmpty())
+            <p class="text-center text-gray-500 italic">Aucun cours trouvé pour cette catégorie.</p>
+        @else
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                @foreach ($courses as $course)
+                    <div
+                        class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col">
+                        <img src="{{ $course->image ? asset('storage/' . $course->image) : asset('images/default-course.jpg') }}"
+                            alt="{{ $course->title }}" class="h-44 w-full object-cover">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h2 class="text-xl font-semibold mb-2 text-gray-900 truncate">{{ $course->title }}</h2>
+                            <p class="text-gray-600 mb-4 line-clamp-3">
+                                {!! \Illuminate\Support\Str::limit(strip_tags($course->description), 120) !!}
+                            </p>
+                            <div class="mt-auto flex justify-between items-center">
+                                <span
+                                    class="text-sm text-indigo-600 font-semibold">{{ $course->category ?? 'Sans catégorie' }}</span>
+                                <a href="{{ route('courses.show', $course->id) }}"
+                                    class="text-indigo-700 font-semibold hover:text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded">
+                                    Voir le cours →
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            @endforeach
-        </div>
-    @endif
-</div>
-</body>
-</html>
+                @endforeach
+            </div>
+        @endif
+
+    </div>
+@endsection

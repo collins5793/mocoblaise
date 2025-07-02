@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
@@ -19,12 +18,18 @@ class QuestionController extends Controller
 
     public function create($quizId)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Vous n\'êtes pas autorisé à accéder à cette page.');
+        }
         $quiz = Quiz::findOrFail($quizId);
         return view('questions.create', compact('quizId'));
     }
 
     public function store(Request $request, $quizId)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Vous n\'êtes pas autorisé à accéder à cette page.');
+        }
         $request->validate([
             'questions.*.question_text' => 'required|string',
             'questions.*.explanation' => 'nullable|string',
@@ -49,12 +54,18 @@ class QuestionController extends Controller
 
     public function edit($quiz_id, $id)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Vous n\'êtes pas autorisé à accéder à cette page.');
+        }
         $question = Question::findOrFail($id);
         return view('questions.edit', compact('question'));
     }
 
     public function update(Request $request, $quiz_id, $id)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Vous n\'êtes pas autorisé à accéder à cette page.');
+        }
         $request->validate([
             'question_text' => 'required|string',
             'explanation' => 'nullable|string',
@@ -68,6 +79,9 @@ class QuestionController extends Controller
 
     public function destroy($quiz_id, $id)
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Vous n\'êtes pas autorisé à accéder à cette page.');
+        }
         Question::destroy($id);
         return redirect()->route('questions.index', $quiz_id)->with('success', 'Question supprimée');
     }
