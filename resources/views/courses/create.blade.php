@@ -1,86 +1,65 @@
-<!DOCTYPE html>
-<html lang="fr">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Créer un nouveau cours</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@section('title', 'Créer un nouveau cours')
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('content')
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Créer un nouveau cours</h1>
 
-    <!-- Trix Editor CSS -->
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/trix/2.0.0/trix.css">
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-    <link rel="stylesheet" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
-<script src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
+        <form action="{{ route('courses.store') }}" method="POST" enctype="multipart/form-data"
+            class="bg-white p-6 rounded-lg shadow">
+            @csrf
 
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+            <div class="mb-4">
+                <label for="title" class="block text-gray-700 font-medium mb-2">Titre du cours</label>
+                <input type="text" name="title" value="{{ old('title') }}"
+                    class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+                    required>
+            </div>
 
-        .container {
-            max-width: 700px;
-        }
+            <div class="mb-4">
+                <label for="description" class="block text-gray-700 font-medium mb-2">Description</label>
 
-        trix-editor {
-            min-height: 200px;
-            background: #ffffff;
-            border: 1px solid #ced4da;
-            border-radius: .25rem;
-            padding: .5rem;
-        }
-    </style>
-</head>
+                {{-- Hidden input lié à trix --}}
+                <input id="description" type="hidden" name="description" value="{{ old('description') }}">
+                <trix-editor input="description"
+                    class="trix-content bg-white border border-gray-300 rounded-md min-h-[200px]"></trix-editor>
+            </div>
 
-<body>
+            <div class="mb-4">
+                <label for="image" class="block text-gray-700 font-medium mb-2">Image (optionnelle)</label>
+                <input type="file" name="image"
+                    class="w-full border border-gray-300 rounded px-4 py-2 file:bg-blue-100 file:border-0 file:rounded file:mr-4">
+            </div>
 
-<div class="container mt-5">
-    <h1 class="mb-4 text-center">Créer un nouveau cours</h1>
+            <div class="flex justify-between">
+                <a href="{{ route('courses.index') }}"
+                    class="inline-block bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                    Retour
+                </a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                    ➕ Créer
+                </button>
+            </div>
+        </form>
+    </div>
 
-    @if ($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-        </div>
-    @endif
+    {{-- Trix CSS/JS --}}
+    @push('styles')
+        <link rel="stylesheet" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
+    @endpush
 
-    <form action="{{ route('courses.store') }}" method="POST" enctype="multipart/form-data"
-          class="bg-white p-4 rounded shadow-sm">
-        @csrf
-
-        <div class="mb-3">
-            <label for="title" class="form-label">Titre du cours</label>
-            <input type="text" name="title" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <input id="description" type="hidden" name="description" value="{{ old('description') }}">
-            <trix-editor input="description"></trix-editor>
-        </div>
-
-        <div class="mb-3">
-            <label for="image" class="form-label">Image (optionnelle)</label>
-            <input type="file" name="image" class="form-control">
-        </div>
-
-        <button type="submit" class="btn btn-primary">Créer</button>
-        <a href="{{ route('courses.index') }}" class="btn btn-secondary">Retour</a>
-    </form>
-</div>
-
-<!-- Trix Editor JS -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/trix/2.0.0/trix.umd.min.js"></script>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-
-</html>
+    @push('scripts')
+        <script src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
+    @endpush
+@endsection

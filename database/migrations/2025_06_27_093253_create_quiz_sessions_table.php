@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('quiz_id')->constrained()->onDelete('cascade');
             $table->timestamp('start_time');
-            $table->timestamp('expiration_time');
+            $table->timestamp('expiration_time')->nullable();
             $table->enum('status', ['en_cours', 'expiré', 'terminé'])->default('en_cours');
             $table->timestamps();
         });
