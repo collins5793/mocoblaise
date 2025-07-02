@@ -1,64 +1,206 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="fr">
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
-
-    <title>{{ config('app.name', 'MoCoblaise') }}</title>
-
-    <!-- Styles stack -->
-    @stack('styles')
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net" />
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <!-- Custom colors & styles -->
+    <title>Plateforme QCM - Accueil</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
     <style>
-        /* Orange clair translucide pour header */
-        .bg-orange-light {
-            background-color: #fcdcbccc;
+        body {
+            font-family: 'Poppins', sans-serif;
         }
 
-        /* Pour rendre header sticky */
-        header {
-            position: sticky;
+        nav {
+            display: flex
+        }
+
+
+        nav a {
+            position: relative;
+            font-size: 1.1em;
+            color: #333;
+            text-decoration: none;
+            padding: 6px 20px;
+            transition: .5s;
+        }
+
+        nav a:hover {
+            color: #0ef;
+        }
+
+        nav a span {
+            position: absolute;
             top: 0;
-            z-index: 1000;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            border-bottom: 2px solid #0ef;
+            border-radius: 15px;
+            transform: scale(0) translateY(50px);
+            opacity: 0;
+            transition: .5s;
         }
 
-        /* Ombre subtile pour header */
-        .shadow-soft {
-            box-shadow: 0 2px 6px rgba(252, 220, 220, 0.6);
+        nav a:hover span {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* Custom scrollbar for modern feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #4f46e5;
+            /* Indigo 600 */
+            border-radius: 10px;
+        }
+
+        /* Smooth hover transitions */
+        a,
+        button {
+            transition: all 0.3s ease;
         }
     </style>
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-900 font-sans antialiased text-gray-800 dark:text-gray-200">
+<body class="bg-gray-50 text-gray-800">
 
-    <!-- Header -->
-    <header class="bg-orange-light shadow-soft text-gray-900 dark:text-gray-900 text-center py-5">
-        <h1 class="text-3xl font-extrabold tracking-tight">{{ config('app.name') }}</h1>
+    <!-- Header/Navbar -->
+    <header class="bg-white shadow sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-indigo-600 hover:text-indigo-700">MoCoBlaise</a>
+
+            <nav class="space-x-6 text-gray-700 font-semibold">
+                <a href="#" class="">Accueil</a>
+                <a href="{{ route('courses.all') }}">Cours</a>
+                @guest
+                    <!-- L'utilisateur n'est PAS connecté -->
+                    <a href="{{ route('login') }}" class="">Connexion</a>
+                    <a href="{{ route('register') }}" class="">S’inscrire</a>
+                @endguest
+
+                @auth
+                    <!-- L'utilisateur est connecté -->
+                    <a href="{{ route('dashboard') }}" class="">Tableau de bord</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <a href="#" onclick="event.preventDefault(); this.closest('form').submit();"
+                            class="text-red-500 hover:underline">
+                            Se déconnecter
+                        </a>
+                    </form>
+
+                @endauth
+                {{-- <span class="ml-4 cursor-pointer select-none">
+                    <button id="langFr" class=" font-bold">FR</button> |
+                    <button id="langEn" class=" font-bold">EN</button>
+                </span> --}}
+            </nav>
+        </div>
     </header>
 
-    <!-- Page Content -->
-    <main class="max-w-7xl mx-auto px-6 py-12 min-h-screen">
-        @yield('content')
-    </main>
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-24">
+        <div class="container mx-auto px-6 max-w-7xl">
+            <div class="flex flex-col-reverse md:flex-row items-center md:justify-start gap-6">
+                <!-- Texte -->
+                <div class="text-center md:text-left md:max-w-lg">
+                    <h1 class="text-5xl md:text-7xl font-extrabold mb-6 drop-shadow-lg leading-tight">
+                        Apprenez, progressez,<br> testez vos connaissances.
 
-    <!-- Footer -->
-    <footer
-        class="bg-gray-200 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 mt-16 text-center py-6 text-sm text-gray-700 dark:text-gray-400 select-none">
-        © {{ date('Y') }} {{ config('app.name') }}. Tous droits réservés.
-    </footer>
 
-    <!-- Scripts stack -->
-    @stack('scripts')
+                        <!-- Témoignages -->
+                        <section class="py-20 bg-gray-100">
+                            <div class="container mx-auto px-6 max-w-5xl text-center">
+                                <h2 class="text-4xl font-extrabold mb-16 text-indigo-700">Ils nous ont fait confiance
+                                </h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                                    <div class="bg-white p-8 rounded-xl shadow-md">
+                                        <p class="text-gray-700 italic text-lg">“Grâce à cette plateforme, j’ai enfin
+                                            réussi mon concours !”
+                                        </p>
+                                        <div class="mt-6 font-semibold text-indigo-700 text-xl">Fatima, Étudiante</div>
+                                    </div>
+                                    <div class="bg-white p-8 rounded-xl shadow-md">
+                                        <p class="text-gray-700 italic text-lg">“Simple, rapide et très complet. Je
+                                            recommande fortement.”
+                                        </p>
+                                        <div class="mt-6 font-semibold text-indigo-700 text-xl">Jean, Candidat libre
+                                        </div>
+                                    </div>
+                                    <div class="bg-white p-8 rounded-xl shadow-md">
+                                        <p class="text-gray-700 italic text-lg">“Une vraie révolution pour mes élèves en
+                                            ligne.”</p>
+                                        <div class="mt-6 font-semibold text-indigo-700 text-xl">Mme Ahoua, Formatrice
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Footer -->
+                        <footer class="bg-indigo-900 text-gray-300 py-8">
+                            <div
+                                class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center max-w-6xl">
+                                <p class="text-sm">&copy; <span id="year"></span> Plateforme QCM. Tous droits
+                                    réservés.</p>
+                                <div class="flex space-x-6 mt-4 md:mt-0 text-sm">
+                                    <a href="#" class="hover:text-white">Mentions légales</a>
+                                    <a href="#" class="hover:text-white">Contact</a>
+                                    <a href="#" class="hover:text-white">Politique de confidentialité</a>
+                                </div>
+                            </div>
+                        </footer>
+
+                        <!-- JS pour année dynamique et lang buttons -->
+                        <script>
+                            // Dynamically set current year in footer
+                            document.getElementById('year').textContent = new Date().getFullYear();
+
+                            // Example for language buttons
+                            document.getElementById('langFr').addEventListener('click', () => {
+                                alert('Langue changée en Français (implémenter la logique)');
+                            });
+                            document.getElementById('langEn').addEventListener('click', () => {
+                                alert('Langue changée en Anglais (implémenter la logique)');
+                            });
+                        </script>
+                        <script>
+                            const isLoggedIn = @json(Auth::check());
+
+                            if (!isLoggedIn) {
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    // Sélectionne tous les liens <a> et boutons <button>
+                                    document.querySelectorAll('a, button').forEach(el => {
+                                        el.addEventListener('click', e => {
+                                            // Si le lien a une href et ce n'est pas la page de connexion ou d'inscription,
+                                            // alors redirige vers login
+                                            if (el.tagName === 'A') {
+                                                const href = el.getAttribute('href');
+                                                if (href && href !== '#' && !href.includes('/login') && !href.includes(
+                                                        '/register')) {
+                                                    e.preventDefault();
+                                                    window.location.href = "{{ route('login') }}";
+                                                }
+                                            }
+                                            // Pour les boutons, on peut aussi rediriger
+                                            else if (el.tagName === 'BUTTON') {
+                                                e.preventDefault();
+                                                window.location.href = "{{ route('login') }}";
+                                            }
+                                        });
+                                    });
+                                });
+                            }
+                        </script>
+
 </body>
 
 </html>
